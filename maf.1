@@ -1,0 +1,36 @@
+.\" Manpage for maf
+.\" Contact austin.sixpack@gmail.com to correct errors or typos.
+.TH man 1 "10 November 2021" "1.0" "maf man page"
+.SH NAME
+\fBmaf\fR -- mac address formatter utility
+.SH SYNOPSIS
+.HP \w'\fBmaf\fR\ 'u
+\fBmaf\fR [MAC_ADDRESS] [\fB\-f\ \fR\fB\fIformat\fR\fR] [\fB\-i\ \fR\fB\fIinputfile\fR\fR] [\fB\-o\ \fR\fB\fIoutputfile\fR\fR]
+.SH DESCRIPTION
+\fBmaf\fR
+(mac address formatter) is a tool used to format mac addresses into different formats. It can format a single mac address or iterate through a file of mac addresses
+.SH OPTIONS
+.PP
+\-f \fIformat\fR
+.RS 4
+Set the format used to create the output\&. Supported formats include 
+\fIcolon\fR
+\fIhyphen\fR
+and
+\fIperiod\fR\&. 
+The format option is not required unless the -i and -o options are being used.
+.RE
+.PP
+\-i \fIinputfile\fR
+.RS 4
+Specify the name of the input file. This option requires the -f option.
+.RE
+.PP
+\-o \fIoutputfile\fR
+.RS 4
+Specify the name of the output file. This option requires the -i -f option.
+.RE
+.SH BUGS
+No known bugs. Tool is still in pre-release so bugs may come and go.
+.SH AUTHOR
+Austin Pack (austin.sixpack@gmail.com)

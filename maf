@@ -5,25 +5,51 @@
 if [ $# -lt 1 ]; then
   echo 1>&2 "$0: not enough arguments"
   exit 2
-elif [ $# -gt 2 ]; then
-  echo 1>&2 "$0: too many arguments"
-  exit 2
 fi
 
-format_mac_address () {
+#Loop to get opts
+while getopts ":i:o:f:" opt; do
+    case "${opt}" in
+        i)
+          INPUT_FILENAME=$OPTARG
+            ;;
+        o)
+          OUTPUT_FILENAME=$OPTARG
+            ;;
+        f)
+          FORMAT=$OPTARG
+            ;;
+        \?)
+            echo "Usage: maf [-i] [-o] [-f]"
+            exit 128
+            ;;
+        :)
+        echo "Invalid option: $OPTARG requires an argument" 1>&2
+            ;;
+    esac
+done
+shift $((OPTIND -1))
 
 #Color codes to use for the output
 green=$'\e[1;32m'
 red=$'\e[1;31m'
 clear=$'\033[0m' 
 
+#FUNCTION SECTION
+format_mac_address () {
 #Make the argument a hexadecimal string without special characters or characters g-z
 mac_unformatted=$(echo "$1"| tr '[:upper:]' '[:lower:]' | tr -dc '[:xdigit:]' | tr -d 'g-z')
 
 #If the mac is too short or too long the argument is invalid
 if [ ${#mac_unformatted} -ne 12 ]; then
-echo "Argument ${red}${1}${clear} is invalid"
-exit 128
+
+if [ $3 ]; then
+echo "$1 is not a valid mac address" >> $3
+return
+else
+echo "${red}${1}${clear} is not a valid mac address"
+return
+fi
 fi
 
 #Format the mac into the different notations
@@ -31,34 +57,60 @@ mac_hyphen=$(echo "$mac_unformatted" | sed 's/\(..\)/\1-/g;s/-$//' )
 mac_colon=$(echo "$mac_unformatted" | sed 's/\(..\)/\1:/g;s/:$//' )
 mac_period=$(echo "$mac_unformatted" | sed 's/\(....\)/\1./g;s/.$//' )
 
+#Print all of the notations
 if [ $# -eq 1 ]; then
-
-#Output all of the notations
 echo "Hyphen Notation: ${green}${mac_hyphen}${clear}"
 echo "Colon Notation:  ${green}$mac_colon${clear}"
 echo "Period Notation: ${green}$mac_period${clear}"
 
+#Hyphen Notation
 elif [ "$2" = "hyphen" ]; then
+if [ $3 ]; then
+echo $mac_hyphen >> $3
+else
+echo "${green}${mac_hyphen}${clear}"
+fi
 
-#Output Hyphen Notation
-echo "Hyphen Notation: ${green}${mac_hyphen}${clear}"
-
+#OColon Notation
 elif [ "$2" = "colon" ]; then
+if [ $3 ]; then
+echo $mac_colon >> $3
+else
+echo "${green}${mac_colon}${clear}"
+fi
 
-#Output Colon Notation
-echo "Colon Notation:  ${green}$mac_colon${clear}"
-
+#Period Notation
 elif [ "$2" = "period" ]; then
-
-#Output Period Notation
-echo "Period Notation: ${green}$mac_period${clear}"
+if [ $3 ]; then
+echo $mac_period >> $3
+else
+echo "${green}${mac_period}${clear}"
+fi
 
 else
-
 echo "Argument ${red}${2}${clear} is invalid"
 echo "Instead use ${green}hyphen${clear}, ${green}colon${clear} or ${green}period${clear}"
 fi
 }
 
-#Call the format_mac_address function
+file_loop() {
+  # $1 is the file to be read, $2 is the output file, $3 is the requested format
+LINES=$(cat $INPUT_FILENAME)
+
+for LINE in $LINES
+  do
+    format_mac_address $LINE $FORMAT $OUTPUT_FILENAME
+done
+}
+
+#SCRIPT LOGIC
+if [ -z $INPUT_FILENAME ] && [ -z $OUTPUT_FILENAME ] && [ -z $FORMAT ]; then
 format_mac_address $1 $2
+#Check if all operator variables are set
+elif [ $INPUT_FILENAME ] && [ $OUTPUT_FILENAME ] && [ $FORMAT ]; then
+file_loop
+elif [ $INPUT_FILENAME ] && [ $FORMAT ]; then
+file_loop
+else
+echo "Missing Operators"
+fi

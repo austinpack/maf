@@ -1,0 +1,29 @@
+#!/bin/bash
+
+#Colon Test
+echo "Colon Test: 00:1b:44:11:3A:B7"
+./maf 00:1b:44:11:3A:B7
+
+#Hypen Test
+echo "Hyphen Test: 00-1b-44-11-3A-B7"
+./maf 00-1b-44-11-3A-B7
+
+#Period Test
+echo "Period Test: 001b.4411.3AB7"
+./maf 001b.4411.3AB7
+
+#String Test
+echo "String Test: 001b44113AB7"
+./maf 001b44113AB7
+ 
+#Special Character Test
+echo "Special Character Test: 00-14-44-1@-3A-B!"
+./maf 00-14-44-1@-3A-B!
+
+#Invalid Mac Test
+echo "Invalid mac test: 00-1b-44-1G-3A-X7"
+./maf 00-1b-44-1G-3A-X7
+
+#File Test colon
+echo "Invalid mac test: maclist.txt"
+./maf -i maclist.txt -o maf-tester-output.txt -f colon

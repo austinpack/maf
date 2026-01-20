@@ -1,0 +1,3 @@
+#!/bin/bash
+cp ./maf /usr/local/bin 
+cp ./maf.1 /usr/local/share/man/man1
